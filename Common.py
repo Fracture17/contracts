@@ -63,8 +63,7 @@ def preserveValues(preservers, Args):
         preserved.update(preserver(Args))
     return preserved
 
-def passPreservers(inner, func):
-    setattr(inner, PRESERVER_ATTRIBUTE, getattr(func, PRESERVER_ATTRIBUTE, []))
+
 
 
 

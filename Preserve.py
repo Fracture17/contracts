@@ -1,5 +1,8 @@
 from Common import *
 
+def passPreservers(inner, func):
+    setattr(inner, PRESERVER_ATTRIBUTE, getattr(func, PRESERVER_ATTRIBUTE, []))
+
 def preserve(preserver):
     def TEST(func):
         @wraps(func)

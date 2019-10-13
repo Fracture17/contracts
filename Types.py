@@ -40,7 +40,6 @@ def types(**requirments):
 
             return result
 
-        passPreservers(do, func)
         return do
 
     return TEST

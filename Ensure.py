@@ -33,7 +33,6 @@ def ensure(condition, description):
                     raise Exception(makeEnsureErrorString(callerData, completeArgs, result, description))
 
             return result
-        passPreservers(do, func)
         return do
 
     return TEST

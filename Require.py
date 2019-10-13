@@ -20,7 +20,6 @@ def require(condition, description):
 
             return func(*args, **kwargs)
 
-        passPreservers(do, func)
         return do
 
     return TEST
