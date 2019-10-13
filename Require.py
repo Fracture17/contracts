@@ -19,6 +19,8 @@ def require(condition, description):
                 raise Exception(s)
 
             return func(*args, **kwargs)
+
+        passPreservers(do, func)
         return do
 
     return TEST
