@@ -1,5 +1,6 @@
-from Common import *
-from _Contract import Contract
+from src.Common import *
+from src.Contract import Contract
+from inspect import cleandoc, getsourcelines, ismethod, isfunction
 
 #Taken from dpcontracts
 def shouldApplyInvariant(name, func, cls):
@@ -65,7 +66,7 @@ class InvariantCheck(Contract):
         methodLine = getMethodActualFirstLine(self.func)
         return makeFileLocationString(self.callerData.filename, methodLine)
 
-    def preserve(self, preservers):
+    def preserveArguments(self, preservers):
         x = preserveValues(preservers, self.args)
         return dictToNamedTuple(x, "Old")
 
@@ -78,6 +79,6 @@ class invariant(Contract):
         for name, value in [(name, getattr(cls, name)) for name in dir(cls)]:
             if shouldApplyInvariant(name, value, cls):
                 setattr(InvariantContractor, name,
-                        InvariantCheck(self.condition, self.description, self.callerData)(value))
+                        InvariantCheck(self.condition, self.description, self.callerFrame)(value))
 
         return InvariantContractor

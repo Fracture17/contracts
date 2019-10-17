@@ -1,12 +1,11 @@
-from Common import *
+from src.Common import *
+from functools import wraps
 
 PRESERVER_ATTRIBUTE = '__contract_preserved_values__'
 
 class Contract:
-    CONTRACT_TYPE = 'DEFAULT CONTRACT'
-
     def __init__(self, condition, description = ""):
-        self.callerData = getCallerData()
+        self.callerFrame = getCallerData()
         self.condition = condition
         self.description = description
         self.func = None
@@ -20,7 +19,7 @@ class Contract:
         def inner(*args, **kwargs):
             self.args = self.getCompleteArguments(*args, **kwargs)
 
-            self.preserved = self.preserve(getattr(inner, PRESERVER_ATTRIBUTE, []))
+            self.preserved = self.preserveArguments(getattr(inner, PRESERVER_ATTRIBUTE, []))
 
             if not self.checkPreCondition():
                 self.preConditionFailure()
@@ -39,7 +38,7 @@ class Contract:
         completeArgs = dictToNamedTuple(completeArgs, "Args")
         return completeArgs
 
-    def preserve(self, preservers):
+    def preserveArguments(self, preservers):
         return dictToNamedTuple({}, "Old")
 
     def checkPreCondition(self):
@@ -64,11 +63,12 @@ class Contract:
         return "PostCondition Failure"
 
     def getContractFileLocation(self):
-        return makeFileLocationString(self.callerData.filename, self.callerData.lineno)
+        return makeFileLocationString(self.callerFrame.filename, self.callerFrame.lineno)
 
-    def makeFormattedDescription(self, **kwargs):
+    #called _self so self can be passed in without conflict
+    def makeFormattedDescription(_self, **kwargs):
         try:
-            return self.description.format(**kwargs)
+            return _self.description.format(**kwargs)
         except Exception as e:
             return "Description formatting failed: " + str(e)
 

@@ -1,5 +1,6 @@
-from Common import *
-from _Contract import Contract
+from src.Common import *
+from src.Contract import Contract
+from inspect import cleandoc
 
 def getArgumentTypeMismatch(args, requirments):
     mismatches = {}
@@ -13,7 +14,7 @@ def getArgumentTypeMismatch(args, requirments):
 class types(Contract):
     def __init__(self, **requirements):
         super().__init__(None)
-        self.callerData = getCallerData()
+        self.callerFrame = getCallerData()
         self.requirements = requirements
         self.mismatches = None
 

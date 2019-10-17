@@ -1,4 +1,5 @@
-from _Contract import *
+from src.Contract import *
+from inspect import cleandoc
 
 class require(Contract):
     def checkPreCondition(self):

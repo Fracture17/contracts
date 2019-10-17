@@ -1,5 +1,6 @@
-from Common import *
-from _Contract import Contract
+from src.Common import *
+from src.Contract import Contract
+from inspect import cleandoc
 
 class ensure(Contract):
     def checkPostCondition(self):
@@ -20,6 +21,6 @@ class ensure(Contract):
     def makeFormattedDescription(self):
         return super().makeFormattedDescription(args = self.args, old = self.preserved, result = self.result)
 
-    def preserve(self, preservers):
+    def preserveArguments(self, preservers):
         x = preserveValues(preservers, self.args)
         return dictToNamedTuple(x, "Old")
