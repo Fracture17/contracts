@@ -1,4 +1,4 @@
-from Contracts import require, ensure, types, invariant, preserve
+from contracts import require, ensure, types, invariant, preserve
 
 def cond(args):
     return True

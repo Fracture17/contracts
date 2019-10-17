@@ -1,5 +1,5 @@
 from Common import *
-from Condition import Condition
+from _Contract import Condition
 
 def passPreservers(inner, func):
     setattr(inner, PRESERVER_ATTRIBUTE, getattr(func, PRESERVER_ATTRIBUTE, []))

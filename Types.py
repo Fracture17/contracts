@@ -1,5 +1,5 @@
 from Common import *
-from Condition import Condition
+from _Contract import Condition
 
 def getArgumentTypeMismatch(args, requirments):
     mismatches = {}

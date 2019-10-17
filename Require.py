@@ -1,4 +1,4 @@
-from Condition import *
+from _Contract import *
 
 class require(Condition):
     def checkPreCondition(self):

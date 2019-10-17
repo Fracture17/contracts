@@ -1,5 +1,5 @@
 from Common import *
-from Condition import Condition
+from _Contract import Condition
 
 #Taken from dpcontracts
 def shouldApplyInvariant(name, func, cls):
