@@ -1,5 +1,5 @@
 from Common import *
-from _Contract import Condition
+from _Contract import Contract
 
 def getArgumentTypeMismatch(args, requirments):
     mismatches = {}
@@ -10,7 +10,7 @@ def getArgumentTypeMismatch(args, requirments):
             mismatches[k] = (args.__getattribute__(k), v)
     return mismatches
 
-class types(Condition):
+class types(Contract):
     def __init__(self, **requirements):
         super().__init__(None)
         self.callerData = getCallerData()

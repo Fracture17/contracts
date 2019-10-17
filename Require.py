@@ -1,6 +1,6 @@
 from _Contract import *
 
-class require(Condition):
+class require(Contract):
     def checkPreCondition(self):
         return self.condition(self.args)
 

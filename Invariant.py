@@ -1,5 +1,5 @@
 from Common import *
-from _Contract import Condition
+from _Contract import Contract
 
 #Taken from dpcontracts
 def shouldApplyInvariant(name, func, cls):
@@ -28,7 +28,7 @@ def getMethodActualFirstLine(func):
     return line
 
 
-class InvariantCheck(Condition):
+class InvariantCheck(Contract):
     def __init__(self, condition, description, callerData):
         super().__init__(condition, description)
         self.callerData = callerData
@@ -69,7 +69,7 @@ class InvariantCheck(Condition):
         x = preserveValues(preservers, self.args)
         return dictToNamedTuple(x, "Old")
 
-class invariant(Condition):
+class invariant(Contract):
     def __call__(self, cls):
         class InvariantContractor(cls):
             def __repr__(self):

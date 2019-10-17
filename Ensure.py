@@ -1,7 +1,7 @@
 from Common import *
-from _Contract import Condition
+from _Contract import Contract
 
-class ensure(Condition):
+class ensure(Contract):
     def checkPostCondition(self):
         if self.condition.__code__.co_argcount == 3:
             return self.condition(self.args, self.result, self.preserved)

@@ -1,5 +1,5 @@
 from Common import *
-from _Contract import Condition
+from _Contract import Contract
 
 def passPreservers(inner, func):
     setattr(inner, PRESERVER_ATTRIBUTE, getattr(func, PRESERVER_ATTRIBUTE, []))
@@ -18,7 +18,7 @@ def preserve(preserver):
         return inner
     return TEST
 
-class preserve(Condition):
+class preserve(Contract):
     def __init__(self, preserver):
         super().__init__(lambda : True)
         self.preserver = preserver

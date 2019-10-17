@@ -2,7 +2,7 @@ from Common import *
 
 PRESERVER_ATTRIBUTE = '__contract_preserved_values__'
 
-class Condition:
+class Contract:
     CONTRACT_TYPE = 'DEFAULT CONTRACT'
 
     def __init__(self, condition, description = ""):
