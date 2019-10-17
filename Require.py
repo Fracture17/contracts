@@ -1,25 +1,16 @@
-from Common import *
+from Condition import *
 
-def makeRequireErrorString(callerData, completeArgs, description):
-    s = makeFileLocationString(callerData.filename, callerData.lineno) + "\n"
-    s += makeArgsErrorString(completeArgs) + "\n"
-    s += description.format(args = completeArgs)
-    return s
+class require(Condition):
+    def checkPreCondition(self):
+        return self.condition(self.args)
 
-def require(condition, description):
-    callerData = getCallerData()
-    def TEST(func):
-        @wraps(func)
-        def do(*args, **kwargs):
-            completeArgs = makeCompleteArgumentDict(func, args, kwargs)
-            completeArgs = dictToNamedTuple(completeArgs, "Args")
+    def makePreConditionErrorString(self):
+        string = f"""
+            Requirement failed at {self.getContractFileLocation()}
+            {self.args}
+            {self.makeFormattedDescription()}
+        """
+        return cleandoc(string)
 
-            if not condition(completeArgs):
-                s = makeRequireErrorString(callerData, completeArgs, description)
-                raise Exception(s)
-
-            return func(*args, **kwargs)
-
-        return do
-
-    return TEST
+    def makeFormattedDescription(self):
+        return super().makeFormattedDescription(args = self.args)

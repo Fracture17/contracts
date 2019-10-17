@@ -1,7 +1,8 @@
 from Common import *
+from Condition import Condition
 
 #Taken from dpcontracts
-def shouldDoInvariant(name, func, cls):
+def shouldApplyInvariant(name, func, cls):
     exceptions = ("__getitem__", "__setitem__", "__lt__", "__le__", "__eq__",
                   "__ne__", "__gt__", "__ge__", "__init__")
 
@@ -16,7 +17,9 @@ def shouldDoInvariant(name, func, cls):
 
     return True
 
-def getMethodActualFirstLine(sourceLines):
+
+def getMethodActualFirstLine(func):
+    sourceLines = getsourcelines(func)
     line = sourceLines[1]
     sourceLines = sourceLines[0]
     while not sourceLines[0].strip().startswith('def'):
@@ -24,53 +27,57 @@ def getMethodActualFirstLine(sourceLines):
         line += 1
     return line
 
-def invariantCheck(condition, description, callerFrame):
-    def TEST(func):
-        @wraps(func)
-        def do(*args, **kwargs):
-            completeArgs = makeCompleteArgumentDict(func, args, kwargs)
-            completeArgs = dictToNamedTuple(completeArgs, "Args")
 
-            #preserve
+class InvariantCheck(Condition):
+    def __init__(self, condition, description, callerData):
+        super().__init__(condition, description)
+        self.callerData = callerData
 
-            if func.__name__ != '__init__':
-                if not condition(completeArgs[0]):
-                    x = getsourcelines(func)
-                    L = getMethodActualFirstLine(x)
-                    print("Precheck invariant at", makeFileLocationString(callerFrame.filename, callerFrame.lineno))
-                    print("failed for method at", makeFileLocationString(callerFrame.filename, L))
-                    print(completeArgs)
-                    print(description)
-                    raise Exception
+    def checkPreCondition(self):
+        if self.func.__name__ != '__init__':
+            return self.condition(self.args[0])
+        return True
 
-            result = func(*args, **kwargs)
+    def checkPostCondition(self):
+        return self.condition(self.args[0])
 
-            if not condition(completeArgs[0]):
-                x = getsourcelines(func)
-                L = getMethodActualFirstLine(x)
-                print("Postcheck invariant at", makeFileLocationString(callerFrame.filename, callerFrame.lineno))
-                print("failed for method at", makeFileLocationString(callerFrame.filename, L))
-                print(completeArgs)
-                print(description)
-                raise Exception
+    def makePreConditionErrorString(self):
+        string = f"""
+            PreCheck Invariant failed at {self.getContractFileLocation()}
+            During method at {self.getMethodFileLocation()}
+            {self.args}
+            {self.makeFormattedDescription(self = self.args[0], old = None, result = None)}
+        """
+        return cleandoc(string)
 
-            return result
-        return do
+    def makePostConditionErrorString(self):
+        string = f"""
+            PreCheck Invariant failed at {self.getContractFileLocation()}
+            During method at {self.getMethodFileLocation()}
+            {self.args}
+            {self.preserved}
+            Result = {self.result}
+            {self.makeFormattedDescription(self = self.args[0], old = self.preserved, result = self.result)}
+        """
+        return cleandoc(string)
 
-    return TEST
+    def getMethodFileLocation(self):
+        methodLine = getMethodActualFirstLine(self.func)
+        return makeFileLocationString(self.callerData.filename, methodLine)
 
+    def preserve(self, preservers):
+        x = preserveValues(preservers, self.args)
+        return dictToNamedTuple(x, "Old")
 
-def invariant(condition, description):
-    callerFrame = getCallerData()
-    def TEST(cls):
+class invariant(Condition):
+    def __call__(self, cls):
         class InvariantContractor(cls):
-            pass
+            def __repr__(self):
+                return repr(cls)
 
         for name, value in [(name, getattr(cls, name)) for name in dir(cls)]:
-            if shouldDoInvariant(name, value, cls):
+            if shouldApplyInvariant(name, value, cls):
                 setattr(InvariantContractor, name,
-                        invariantCheck(condition, description, callerFrame)(value))
+                        InvariantCheck(self.condition, self.description, self.callerData)(value))
 
         return InvariantContractor
-
-    return TEST

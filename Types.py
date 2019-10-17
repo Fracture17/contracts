@@ -1,45 +1,50 @@
 from Common import *
+from Condition import Condition
 
 def getArgumentTypeMismatch(args, requirments):
     mismatches = {}
     for (k, v) in requirments.items():
         if k == 'RESULT':
             pass
-        elif type(args[k]) != v:
-            mismatches[k] = (args[k], v)
+        elif type(args.__getattribute__(k)) != v:
+            mismatches[k] = (args.__getattribute__(k), v)
     return mismatches
 
-def makeTypeMismatchString(mismatches: dict):
-    s = 'Type mismatch' + '\n'
-    for k, (v, t) in mismatches.items():
-        s += f"Arg {k} = {v}, which is type {type(v)}, should have type {t}"
-    return s
+class types(Condition):
+    def __init__(self, **requirements):
+        super().__init__(None)
+        self.callerData = getCallerData()
+        self.requirements = requirements
+        self.mismatches = None
 
-def types(**requirments):
-    callerData = getCallerData()
-    def TEST(func):
-        @wraps(func)
-        def do(*args, **kwargs):
-            completeArgs = makeCompleteArgumentDict(func, args, kwargs)
-            mismatches = getArgumentTypeMismatch(completeArgs, requirments)
+    def checkPreCondition(self):
+        self.mismatches = getArgumentTypeMismatch(self.args, self.requirements)
+        return len(self.mismatches) == 0
 
-            if mismatches:
-                print(makeTypeMismatchString(mismatches))
-                raise Exception
+    def checkPostCondition(self):
+        if 'RESULT' in self.requirements:
+            return type(self.result) == self.requirements['RESULT']
+        return True
 
-            result = func(*args, **kwargs)
+    def makePreConditionErrorString(self):
+        string = f"""
+            Type check failed at {self.getContractFileLocation()}
+            {self.args}
+            {self.makeMismatchErrorString()}
+            {self.makeFormattedDescription(args = self.args)}
+        """
+        return cleandoc(string)
 
-            if 'RESULT' in requirments:
-                if type(result) != requirments['RESULT']:
-                    expected = requirments['RESULT']
-                    print("Failed typecheck at", makeFileLocationString(callerData.filename, callerData.lineno))
-                    completeArgs = dictToNamedTuple(completeArgs, 'Args')
-                    print(completeArgs)
-                    print(f"Result = {result}, type {type(result)}. Expected type {expected}")
-                    raise Exception
+    def makePostConditionErrorString(self):
+        string = f"""
+            Type check failed at {self.getContractFileLocation()}
+            {self.args}
+            {self.preserved}
+            Result = {self.result}, type {type(self.result)}.  Expected type {self.requirements['RESULT']}
+            {self.makeFormattedDescription(args = self.args, old = self.preserved, result = self.result)}
+        """
+        return cleandoc(string)
 
-            return result
-
-        return do
-
-    return TEST
+    def makeMismatchErrorString(self):
+        return '\n'.join(f"{k} = {v}, which is type {type(v)}, expected type {t}"
+                         for k, (v, t) in self.mismatches.items())

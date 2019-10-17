@@ -1,4 +1,5 @@
 from Common import *
+from Condition import Condition
 
 def passPreservers(inner, func):
     setattr(inner, PRESERVER_ATTRIBUTE, getattr(func, PRESERVER_ATTRIBUTE, []))
@@ -16,3 +17,16 @@ def preserve(preserver):
         passPreservers(inner, func)
         return inner
     return TEST
+
+class preserve(Condition):
+    def __init__(self, preserver):
+        super().__init__(lambda : True)
+        self.preserver = preserver
+
+    def __call__(self, func):
+        inner = super().__call__(func)
+        if not hasattr(func, PRESERVER_ATTRIBUTE):
+            setattr(func, PRESERVER_ATTRIBUTE, [])
+        getattr(func, PRESERVER_ATTRIBUTE).append(self.preserver)
+        passPreservers(inner, func)
+        return inner

@@ -1,38 +1,25 @@
 from Common import *
+from Condition import Condition
 
-def makeEnsureErrorString(callerData, completeArgs, result, description, preserved = None):
-    s = "Ensure failed at " + makeFileLocationString(callerData.filename, callerData.lineno)
-    s += '\n' + makeArgsErrorString(completeArgs)
-    if preserved:
-        s += '\n' + str(preserved)
-    s += '\n' + "Result = " + str(result)
-    try:
-        s += "\n" + description.format(args = completeArgs, result = result, old = preserved)
-    except Exception as e:
-        s += "\n" + "Description formatting failed: " + str(e)
-    return s
+class ensure(Condition):
+    def checkPostCondition(self):
+        if self.condition.__code__.co_argcount == 3:
+            return self.condition(self.args, self.result, self.preserved)
+        return self.condition(self.args, self.result)
 
-def ensure(condition, description):
-    callerData = getCallerData()
-    def TEST(func):
-        @wraps(func)
-        def do(*args, **kwargs):
-            completeArgs = makeCompleteArgumentDict(func, args, kwargs)
-            completeArgs = dictToNamedTuple(completeArgs, "Args")
+    def makePostConditionErrorString(self):
+        string = f"""
+                    Ensure failed at {self.getContractFileLocation()}
+                    {self.args}
+                    {self.preserved}
+                    Result = {self.result}
+                    {self.makeFormattedDescription()}
+                """
+        return cleandoc(string)
 
-            preserved = preserveValues(getattr(do, PRESERVER_ATTRIBUTE, []), completeArgs)
+    def makeFormattedDescription(self):
+        return super().makeFormattedDescription(args = self.args, old = self.preserved, result = self.result)
 
-            result = func(*args, **kwargs)
-
-            if condition.__code__.co_argcount == 3:
-                preserved = dictToNamedTuple(preserved, "Old")
-                if not condition(completeArgs, result, preserved):
-                    raise Exception(makeEnsureErrorString(callerData, completeArgs, result, description, preserved))
-            else:
-                if not condition(completeArgs, result):
-                    raise Exception(makeEnsureErrorString(callerData, completeArgs, result, description))
-
-            return result
-        return do
-
-    return TEST
+    def preserve(self, preservers):
+        x = preserveValues(preservers, self.args)
+        return dictToNamedTuple(x, "Old")
