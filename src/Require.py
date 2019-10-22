@@ -1,4 +1,4 @@
-from src.Contract import *
+from .Contract import *
 from inspect import cleandoc
 
 class require(Contract):

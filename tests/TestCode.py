@@ -1,4 +1,6 @@
-from __init__ import require, ensure, types, invariant, preserve
+#from  import require, ensure, types, invariant, preserve
+from src.Ensure import ensure
+from src import require, ensure, types, invariant, preserve
 
 def cond(args):
     return True
@@ -12,7 +14,7 @@ def QQQ(x, y = 10):
     return x * 2
 
 @preserve(lambda args: {'z': args.z})
-@types(RESULT = float, y = float, q = int)
+@types(RESULT = float, y = int, q = int)
 @require(cond, "x = {args.x}, must = 3")
 @require(lambda args: args.x == 2, "x = {args.x}, must = 3")
 @ensure(lambda args, result, old: True, "result should be 5")
@@ -20,7 +22,7 @@ def QQQ(x, y = 10):
 #@ensure(lambda args, result: result == 10, "result hhhhhhh be {old.x}")
 #@require(cond, "x = {args.x}, must = 3")
 def T(z, y, x = 18, q = 3):
-    return z * y
+    return float(z * y)
 
 
 @invariant(lambda self: self.x == 0)

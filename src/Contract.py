@@ -1,4 +1,4 @@
-from src.Common import *
+from .Common import *
 from functools import wraps
 
 PRESERVER_ATTRIBUTE = '__contract_preserved_values__'

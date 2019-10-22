@@ -1,4 +1,4 @@
-from src.Contract import *
+from .Contract import *
 
 def passPreservers(inner, func):
     setattr(inner, PRESERVER_ATTRIBUTE, getattr(func, PRESERVER_ATTRIBUTE, []))

@@ -1,5 +1,5 @@
-from src.Common import *
-from src.Contract import Contract
+from .Common import *
+from .Contract import Contract
 from inspect import cleandoc, getsourcelines, ismethod, isfunction
 
 #Taken from dpcontracts
@@ -30,9 +30,9 @@ def getMethodActualFirstLine(func):
 
 
 class InvariantCheck(Contract):
-    def __init__(self, condition, description, callerData):
+    def __init__(self, condition, description, callerFrame):
         super().__init__(condition, description)
-        self.callerData = callerData
+        self.callerFrame = callerFrame
 
     def checkPreCondition(self):
         if self.func.__name__ != '__init__':
@@ -64,7 +64,7 @@ class InvariantCheck(Contract):
 
     def getMethodFileLocation(self):
         methodLine = getMethodActualFirstLine(self.func)
-        return makeFileLocationString(self.callerData.filename, methodLine)
+        return makeFileLocationString(self.callerFrame.filename, methodLine)
 
     def preserveArguments(self, preservers):
         x = preserveValues(preservers, self.args)

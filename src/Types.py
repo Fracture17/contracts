@@ -1,5 +1,5 @@
-from src.Common import *
-from src.Contract import Contract
+from .Common import *
+from .Contract import Contract
 from inspect import cleandoc
 
 def getArgumentTypeMismatch(args, requirments):

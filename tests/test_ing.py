@@ -10,7 +10,8 @@ def test_code():
     assert T(2, 5, 2) == 10
     t = TTT(0)
     #t.x = 2
-    t.hey()
+    with raises(PostConditionError):
+        t.hey()
 
 
 @given(booleans())
@@ -63,16 +64,6 @@ def test_invariant(b):
 
 @given(booleans())
 def test_types(b):
-    c = require(lambda args: args.x == True)
-    v = c(lambda x: x)
-    if b == False:
-        with raises(PreConditionError):
-            v(b)
-    else:
-        v(b)
-
-@given(booleans())
-def test_require(b):
     c = require(lambda args: args.x == True)
     v = c(lambda x: x)
     if b == False:
