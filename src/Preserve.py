@@ -4,8 +4,8 @@ def passPreservers(inner, func):
     setattr(inner, PRESERVER_ATTRIBUTE, getattr(func, PRESERVER_ATTRIBUTE, []))
 
 class preserve(Contract):
-    def __init__(self, preserver):
-        super().__init__(lambda : True)
+    def __init__(self, preserver, contractLevel = DEFAULT):
+        super().__init__(lambda : True, contractLevel)
         self.preserver = preserver
 
     def __call__(self, func):

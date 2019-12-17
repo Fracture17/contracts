@@ -3,6 +3,17 @@ from src.Contract import *
 from hypothesis import given
 from hypothesis.strategies import booleans
 from pytest import raises
+from src.ContractLevel import OFF
+
+
+def test_debugLevel():
+    assert QQQ(10,5) == 20
+
+    assert T(2, 5, 2) == 10
+    t = TTT(0)
+
+    empty(29)
+
 
 def test_code():
     assert QQQ(10,5) == 20
@@ -62,12 +73,12 @@ def test_invariant(b):
         with raises(PreConditionError):
             O.set(b)
 
-@given(booleans())
-def test_types(b):
-    c = require(lambda args: args.x == True)
-    v = c(lambda x: x)
-    if b == False:
-        with raises(PreConditionError):
-            v(b)
-    else:
-        v(b)
+
+@types(x = int)
+def v(x):
+    pass
+
+def test_types():
+    with raises(PreConditionError):
+        v("")
+    v(2)

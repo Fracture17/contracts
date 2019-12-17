@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(name='fracture-contracts',
       version='0.1',
-      description='dpcontracts with improved error reporting',
+      description='The functionality of dpcontracts with improved error messages',
       url='https://github.com/Fracture17/contracts',
       author='Fracture',
       packages=find_packages(),

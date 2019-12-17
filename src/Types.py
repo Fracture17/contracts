@@ -1,10 +1,11 @@
 from .Common import *
 from .Contract import Contract
+from .ContractLevel import DEFAULT
 from inspect import cleandoc
 
-def getArgumentTypeMismatch(args, requirments):
+def getArgumentTypeMismatch(args, requirements):
     mismatches = {}
-    for (k, v) in requirments.items():
+    for (k, v) in requirements.items():
         if k == 'RESULT':
             pass
         elif type(args.__getattribute__(k)) != v:
@@ -13,7 +14,12 @@ def getArgumentTypeMismatch(args, requirments):
 
 class types(Contract):
     def __init__(self, **requirements):
-        super().__init__(None)
+        contractLevel = DEFAULT
+        if 'contractLevel' in requirements:
+            contractLevel = requirements['contractLevel']
+            del requirements['contractLevel']
+
+        super().__init__(None, contractLevel = contractLevel)
         self.callerFrame = getCallerData()
         self.requirements = requirements
         self.mismatches = None

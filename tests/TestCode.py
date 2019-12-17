@@ -1,6 +1,7 @@
 #from  import require, ensure, types, invariant, preserve
 from src.Ensure import ensure
 from src import require, ensure, types, invariant, preserve
+from src.ContractLevel import OFF
 
 def cond(args):
     return True
@@ -38,6 +39,10 @@ class TTT:
     def hey(self):
         self.x = 10
         pass
+
+@ensure(lambda self: self.x != x, "", contractLevel=OFF)
+def empty(x):
+    pass
 
 if __name__ == 'main':
     print(T(2, 5, 2))

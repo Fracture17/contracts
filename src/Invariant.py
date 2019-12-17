@@ -30,8 +30,8 @@ def getMethodActualFirstLine(func):
 
 
 class InvariantCheck(Contract):
-    def __init__(self, condition, description, callerFrame):
-        super().__init__(condition, description)
+    def __init__(self, condition, description, contractLevel, callerFrame):
+        super().__init__(condition, description, contractLevel)
         self.callerFrame = callerFrame
 
     def checkPreCondition(self):
@@ -79,6 +79,6 @@ class invariant(Contract):
         for name, value in [(name, getattr(cls, name)) for name in dir(cls)]:
             if shouldApplyInvariant(name, value, cls):
                 setattr(InvariantContractor, name,
-                        InvariantCheck(self.condition, self.description, self.callerFrame)(value))
+                        InvariantCheck(self.condition, self.description, self.contractLevel, self.callerFrame)(value))
 
         return InvariantContractor

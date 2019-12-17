@@ -1,10 +1,13 @@
 from .Common import *
 from functools import wraps
+from .ContractLevel import *
+
 
 PRESERVER_ATTRIBUTE = '__contract_preserved_values__'
 
+
 class Contract:
-    def __init__(self, condition, description = ""):
+    def __init__(self, condition, description = "", contractLevel = DEFAULT):
         self.callerFrame = getCallerData()
         self.condition = condition
         self.description = description
@@ -12,8 +15,14 @@ class Contract:
         self.args = None
         self.preserved = None
         self.result = None
+        self.contractLevel = contractLevel
 
     def __call__(self, func):
+        if TESTING_LEVEL == OFF:
+            return func
+        if TESTING_LEVEL < self.contractLevel:
+            return func
+
         self.func = func
         @wraps(func)
         def inner(*args, **kwargs):
@@ -72,8 +81,10 @@ class Contract:
         except Exception as e:
             return "Description formatting failed: " + str(e)
 
+
 class PreConditionError(AssertionError):
     pass
+
 
 class PostConditionError(AssertionError):
     pass
