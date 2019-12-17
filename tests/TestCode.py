@@ -1,7 +1,7 @@
 #from  import require, ensure, types, invariant, preserve
-from src.Ensure import ensure
-from src import require, ensure, types, invariant, preserve
-from src.ContractLevel import OFF
+from Contracts.Ensure import ensure
+from Contracts import require, ensure, types, invariant, preserve
+from Contracts.ContractLevel import OFF
 
 def cond(args):
     return True

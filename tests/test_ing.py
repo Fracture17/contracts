@@ -1,9 +1,9 @@
 from tests.TestCode import *
-from src.Contract import *
+from Contracts.Contract import *
 from hypothesis import given
 from hypothesis.strategies import booleans
 from pytest import raises
-from src.ContractLevel import OFF
+from Contracts.ContractLevel import OFF
 
 
 def test_debugLevel():
